@@ -1,4 +1,4 @@
-# STM32 WS2812 LED Library
+# STM32 DS18B20 Temperature Sensor Library
 C++ Library for interfacing the DS18B20 Temperature Sensor with a STM32 like the STM32F103C8 (BLUEPILL)
 
 Based on the Library by https://controllerstech.com/ds18b20-and-stm32/
