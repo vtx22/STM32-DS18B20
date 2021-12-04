@@ -19,4 +19,4 @@ Using the Library is very easy. Follow the steps.
         DS18B20 temp = DS18B20(&timing);
 5. Use the implemented functions to read the temperature
         
-        float temperature = temp.getTemperature();
+        float temperature = temp.readTemperature();
