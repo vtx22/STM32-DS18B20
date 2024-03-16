@@ -1,126 +1,132 @@
 #include "DS18B20.hpp"
 
-DS18B20::DS18B20(TIMER *tim)
+DS18B20::DS18B20(TIM_HandleTypeDef *tim, GPIO_TypeDef *port, uint16_t pin) : _tim(tim), _port(port), _pin(pin)
 {
-	_tim = tim;
+	HAL_TIM_Base_Start(_tim);
 }
 
-void DS18B20::setDataPin(bool on)
+void DS18B20::delay_us(uint16_t us)
+{
+	_tim->Instance->CNT = 0;
+	while (_tim->Instance->CNT < us)
+		;
+}
+
+void DS18B20::set_data_pin(bool on)
 {
 	if (on)
 	{
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
+		return HAL_GPIO_WritePin(_port, _pin, GPIO_PIN_SET);
 	}
-	else
-	{
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
-	}
+
+	return HAL_GPIO_WritePin(_port, _pin, GPIO_PIN_RESET);
 }
 
-void DS18B20::toggleDataPin()
+void DS18B20::toggle_data_pin()
 {
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+	return HAL_GPIO_TogglePin(_port, _pin);
 }
 
-void DS18B20::setPinOUTPUT()
+GPIO_PinState DS18B20::read_data_pin()
+{
+	return HAL_GPIO_ReadPin(_port, _pin);
+}
+
+void DS18B20::set_pin_output()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_PIN_13;
+	GPIO_InitStruct.Pin = _pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	return HAL_GPIO_Init(_port, &GPIO_InitStruct);
 }
 
-void DS18B20::setPinINPUT()
+void DS18B20::set_pin_input()
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_PIN_13;
+	GPIO_InitStruct.Pin = _pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	return HAL_GPIO_Init(_port, &GPIO_InitStruct);
 }
 
-void DS18B20::startSensor()
+void DS18B20::start_sensor()
 {
-	setPinOUTPUT();
-	setDataPin(false);
+	set_pin_output();
+	set_data_pin(false);
 
-	_tim->delayUS(480);
-	setPinINPUT();
-	_tim->delayUS(80);
-	HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13));
-	_tim->delayUS(400);
+	delay_us(480);
+	set_pin_input();
+	delay_us(80);
+	read_data_pin();
+	delay_us(400);
 }
 
 void DS18B20::writeData(uint8_t data)
 {
-	setPinOUTPUT(); // set as output
+	set_pin_output();
 
 	for (uint8_t i = 0; i < 8; i++)
 	{
 
-		if (data & (1 << i)) // if the bit is high
+		if (data & (1 << i))
 		{
-			// write 1
+			set_pin_output();
+			set_data_pin(false);
+			delay_us(1);
 
-			setPinOUTPUT();	   // set as output
-			setDataPin(false); // pull the pin LOW
-			_tim->delayUS(1);  // wait for 1 us
-
-			setPinINPUT();	   // set as input
-			_tim->delayUS(60); // wait for 60 us
+			set_pin_input();
+			delay_us(60);
+			continue;
 		}
-		else // if the bit is low
-		{
-			// write 0
 
-			setPinOUTPUT();
-			setDataPin(false); // pull the pin LOW
-			_tim->delayUS(60); // wait for 60 us
+		set_pin_output();
+		set_data_pin(false);
+		delay_us(60);
 
-			setPinINPUT();
-		}
+		set_pin_input();
 	}
 }
 
-uint8_t DS18B20::readData()
+uint8_t DS18B20::read_data()
 {
 	uint8_t value = 0;
-	setPinINPUT();
+	set_pin_input();
 
 	for (uint8_t i = 0; i < 8; i++)
 	{
-		setPinOUTPUT(); // set as output
+		set_pin_output();
 
-		setDataPin(false); // pull the data pin LOW
-		_tim->delayUS(2);  // wait for 2 us
+		set_data_pin(false);
+		delay_us(2);
+		set_pin_input();
 
-		setPinINPUT();							  // set as input
-		if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) // if the pin is HIGH
+		if (read_data_pin())
 		{
-			value |= 1 << i; // read = 1
+			value |= 1 << i;
 		}
-		_tim->delayUS(60); // wait for 60 us
+
+		delay_us(60);
 	}
 	return value;
 }
 
-float DS18B20::readTemperature()
+float DS18B20::read_temperature()
 {
-	startSensor();
+	start_sensor();
 	HAL_Delay(1);
 	writeData(0xCC);
 	writeData(0x44);
 	HAL_Delay(800);
-	startSensor();
+	start_sensor();
 	writeData(0xCC);
 	writeData(0xBE);
 
-	uint8_t temp1 = readData();
-	uint8_t temp2 = readData();
+	uint8_t temp1 = read_data();
+	uint8_t temp2 = read_data();
 
-	uint16_t tempCom = (temp2 << 8) | temp1;
+	uint16_t temp_com = (temp2 << 8) | temp1;
 
-	return (float)(tempCom / 16.0);
+	return (float)(temp_com / 16.0);
 }

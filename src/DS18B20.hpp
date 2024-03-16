@@ -1,27 +1,38 @@
-#pragma once
+#ifndef DS18B20_HPP
+#define DS18B20_HPP
+
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_tim.h"
+
 #include <stdint.h>
-#include "Timing.hpp"
 
 class DS18B20
 {
 public:
-	DS18B20(TIMER *tim);
-	float readTemperature();
+	DS18B20(TIM_HandleTypeDef *tim, GPIO_TypeDef *port, uint16_t pin);
+	float read_temperature();
 
 private:
-	//PIN CONFIG AND SETTING
-	void setDataPin(bool on);
-	void toggleDataPin();
+	// PIN CONFIG AND SETTING
+	void set_data_pin(bool on);
+	void toggle_data_pin();
 
-	void setPinOUTPUT();
-	void setPinINPUT();
+	void set_pin_output();
+	void set_pin_input();
 
-	//INTERFACING FUNCTIONS
-	void startSensor();
+	GPIO_PinState read_data_pin();
+
+	// INTERFACING FUNCTIONS
+	void start_sensor();
 
 	void writeData(uint8_t data);
-	uint8_t readData();
+	uint8_t read_data();
 
-	TIMER *_tim;
+	void delay_us(uint16_t us);
+
+	TIM_HandleTypeDef *_tim;
+	GPIO_TypeDef *_port;
+	uint16_t _pin;
 };
+
+#endif // DS18B20_HPP
