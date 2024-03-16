@@ -4,19 +4,17 @@ C++ Library for interfacing the DS18B20 Temperature Sensor with a STM32 like the
 Based on the Library by https://controllerstech.com/ds18b20-and-stm32/
 
 # Usage
-Using the Library is very easy. Follow the steps.
+Using the Library is very easy. Follow these steps:
 
-1. Copy the four files of the src folder to your source / include folder.
-2. Include the two header files 
+1. Create a hardware timer (htim) that ticks every microsecond. Calculate the necessary prescaler based on your mcu clock frequency.
+
+2. Copy the .hpp and .cpp files to your source / include folder.
+3. Include the header file
         
-        #include "Timing.hpp"
         #include "DS18B20.hpp"
-3. Create a new TIMING object by using a hardware timer. Make sure the timer is enabled and ticks every microsecond
+4. Create a new DS18B20 object by passing the htim reference, the GPIO Port and the GPIO Pin of the sensor. If you are using htim1 and Pin PB13 for example, call
         
-        TIMING timing = TIMING(&htim1);
-4. Create a new DS18B20 object
-        
-        DS18B20 temp = DS18B20(&timing);
+        DS18B20 temp_sensor = DS18B20(&htim1, GPIOB, GPIO_Pin_13);
 5. Use the implemented functions to read the temperature
         
-        float temperature = temp.readTemperature();
+        float temperature = temp_sensor.readTemperature();
