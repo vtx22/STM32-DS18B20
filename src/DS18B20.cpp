@@ -14,12 +14,7 @@ void DS18B20::delay_us(uint16_t us)
 
 void DS18B20::set_data_pin(bool on)
 {
-	if (on)
-	{
-		return HAL_GPIO_WritePin(_port, _pin, GPIO_PIN_SET);
-	}
-
-	return HAL_GPIO_WritePin(_port, _pin, GPIO_PIN_RESET);
+	return HAL_GPIO_WritePin(_port, _pin, on ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 void DS18B20::toggle_data_pin()
