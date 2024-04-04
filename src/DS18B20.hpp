@@ -27,7 +27,7 @@ private:
 	void writeData(uint8_t data);
 	uint8_t read_data();
 
-	static void delay_us(uint16_t us);
+	void delay_us(uint16_t us);
 
 	TIM_HandleTypeDef *_tim;
 	GPIO_TypeDef *_port;
