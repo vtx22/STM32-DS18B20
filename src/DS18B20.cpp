@@ -1,10 +1,19 @@
 #include "DS18B20.hpp"
 
+/*
+Constructor for temperature sensor object
+@param tim Pointer to hardware timer handle. The timer has to tick every microsecond!
+@param port GPIO port of the sensor pin, e.g. GPIOB
+@param pin GPIO pin number of the sensor pin
+*/
 DS18B20::DS18B20(TIM_HandleTypeDef *tim, GPIO_TypeDef *port, uint16_t pin) : _tim(tim), _port(port), _pin(pin)
 {
 	HAL_TIM_Base_Start(_tim);
 }
 
+/*
+Block for given time in microseconds by waiting for the htim ticks
+*/
 void DS18B20::delay_us(uint16_t us)
 {
 	_tim->Instance->CNT = 0;
@@ -107,6 +116,11 @@ uint8_t DS18B20::read_data()
 	return value;
 }
 
+/*
+Read the current temperature from the sensor.
+This functions blocks for around 800ms due to the slow conversion time.
+@return Temperature in degrees Celsius
+*/
 float DS18B20::read_temperature()
 {
 	start_sensor();
