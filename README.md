@@ -22,3 +22,4 @@ Using the Library is very easy. Follow these steps:
         float temperature = temp_sensor.read_temp_celsius();
         float temperature = temp_sensor.read_temp_fahrenheit();
 ```
+:warning: Reading the temperature takes over 800ms as the function waits for the whole conversion time. A non-blocking solution is described below.
