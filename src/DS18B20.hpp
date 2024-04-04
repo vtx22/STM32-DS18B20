@@ -14,8 +14,6 @@ public:
 	float read_temp_celsius();
 	float read_temp_fahrenheit();
 
-	static void delay_us(uint16_t us);
-
 private:
 	void set_data_pin(bool on);
 	void toggle_data_pin();
