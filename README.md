@@ -10,12 +10,15 @@ Using the Library is very easy. Follow these steps:
 
 2. Copy the .hpp and .cpp files to your source / include folder.
 3. Include the header file
-        
+```C++
         #include "DS18B20.hpp"
-4. Create a new DS18B20 object by passing the htim reference, the GPIO Port and the GPIO Pin of the sensor. If you are using htim1 and Pin PB13 for example, call
-        
+```
+5. Create a new DS18B20 object by passing the htim reference, the GPIO Port and the GPIO Pin of the sensor. If you are using htim1 and Pin PB13 for example, call
+```C++
         DS18B20 temp_sensor = DS18B20(&htim1, GPIOB, GPIO_Pin_13);
-5. Use the implemented functions to read the temperature
-        
+```
+7. Use the implemented functions to read the temperature
+```C++
         float temperature = temp_sensor.read_temp_celsius();
         float temperature = temp_sensor.read_temp_fahrenheit();
+```
