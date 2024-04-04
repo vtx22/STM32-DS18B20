@@ -118,10 +118,10 @@ uint8_t DS18B20::read_data()
 
 /*
 Read the current temperature from the sensor.
-This functions blocks for around 800ms due to the slow conversion time.
+This functions blocks for around 800ms as it waits for the conversion time!
 @return Temperature in degrees Celsius
 */
-float DS18B20::read_temperature()
+float DS18B20::read_temp_celsius()
 {
 	start_sensor();
 	HAL_Delay(1);
@@ -138,4 +138,14 @@ float DS18B20::read_temperature()
 	uint16_t temp_com = (temp2 << 8) | temp1;
 
 	return (float)(temp_com / 16.0);
+}
+
+/*
+Read the current temperature from the sensor.
+This functions blocks for around 800ms as it waits for the conversion time!
+@return Temperature in degrees Fahrenheit
+*/
+float DS18B20::read_temp_fahrenheit()
+{
+	return read_temp_celsius() * 1.8 + 32.0;
 }

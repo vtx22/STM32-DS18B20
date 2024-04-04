@@ -10,7 +10,10 @@ class DS18B20
 {
 public:
 	DS18B20(TIM_HandleTypeDef *tim, GPIO_TypeDef *port, uint16_t pin);
-	float read_temperature();
+
+	float read_temp_celsius();
+	float read_temp_fahrenheit();
+
 	static void delay_us(uint16_t us);
 
 private:

@@ -17,4 +17,5 @@ Using the Library is very easy. Follow these steps:
         DS18B20 temp_sensor = DS18B20(&htim1, GPIOB, GPIO_Pin_13);
 5. Use the implemented functions to read the temperature
         
-        float temperature = temp_sensor.read_temperature();
+        float temperature = temp_sensor.read_temp_celsius();
+        float temperature = temp_sensor.read_temp_fahrenheit();
