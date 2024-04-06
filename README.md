@@ -23,3 +23,5 @@ Using the Library is very easy. Follow these steps:
         float temperature = temp_sensor.read_temp_fahrenheit();
 ```
 :warning: Reading the temperature takes over 800ms as the function waits for the whole conversion time. A non-blocking solution is described below.
+
+8. Make sure to use the right build flag for your microcontroller. See ```DS18B20.hpp``` for all types (you can include your own controller if you need to). For STM32F103C8Tx for example, use ```-D STM32F1``` or simply use ```#define STM32F1``` somewhere in your code.
